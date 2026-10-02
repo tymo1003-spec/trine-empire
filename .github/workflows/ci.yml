@@ -1,0 +1,64 @@
+name: L3 App-Chain CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: trine_user
+          POSTGRES_PASSWORD: trine_password
+          POSTGRES_DB: trine_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Клонування репозиторію
+        uses: actions/checkout@v4
+
+      - name: Налаштування Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Встановлення залежностей
+        run: npm ci
+
+      - name: Генерація Prisma Client
+        run: npx prisma generate
+
+      - name: Запуск міграцій бази даних
+        env:
+          DATABASE_URL: "postgresql://trine_user:trine_password@localhost:5432/trine_db?schema=public"
+        run: npx prisma db push
+
+      - name: Перевірка збірки Docker образу
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: trine-empire-api:test
