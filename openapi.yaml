@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: Trine Empire Core API
+  version: 1.0.0
+  description: Modular, cryptographically secure blockchain-based data management core for cross-module integration and strategic decision auditing.
+servers:
+  - url: http://127.0.0.1:3000
+    description: Local Development Server
+paths:
+  /verify:
+    get:
+      summary: Verify blockchain integrity
+      description: Recalculates all hashes sequentially to verify that the chain has not been compromised.
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: chain verified
+                  totalBlocks:
+                    type: integer
+                    example: 5
+                  blockStatus:
+                    type: string
+                    example: secure
+  /api/blocks:
+    get:
+      summary: Retrieve all blocks
+      description: Returns the complete sequence of blocks ordered by index.
+      responses:
+        "200":
+          description: List of blocks
+  /api/blocks/{index}:
+    get:
+      summary: Retrieve a specific block by index
+      parameters:
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Block data found
+        "404":
+          description: Block not found
+  /api/export:
+    get:
+      summary: Export full blockchain data
+      description: Returns the entire chain with version metadata and export timestamp.
+      responses:
+        "200":
+          description: Chain export payload
+  /api/module/sync:
+    post:
+      summary: Synchronize data from an external module
+      description: Accepts payloads tagged with a specific source module identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sourceModule
+                - payload
+              properties:
+                sourceModule:
+                  type: string
+                  example: AdvisoryBoard
+                payload:
+                  type: string
+                  example: Approved technological independence strategy
+      responses:
+        "200":
+          description: Module data synchronized into a new block
+  /api/advisory/decision:
+    post:
+      summary: Register Advisory Board decision
+      description: Immutable recording of expert strategic audits and governance decisions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - expertId
+                - decisionTitle
+              properties:
+                expertId:
+                  type: string
+                  example: EXP-01
+                decisionTitle:
+                  type: string
+                  example: Cross-Module Architecture Validation
+                details:
+                  type: string
+                  example: Approved full technical independence and storage abstraction layer.
+      responses:
+        "200":
+          description: Decision successfully registered in the blockchain

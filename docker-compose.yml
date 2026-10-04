@@ -1,25 +1,10 @@
-version: '3.8'
 services:
-  trine-core-api:
+  trine-core:
     build: .
+    container_name: trine-empire-trine-core
+    volumes:
+      - .:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://trine_user:trine_password@postgres:5432/trine_db
-      - NODE_ENV=production
-    depends_on:
-      - postgres
     restart: always
-  postgres:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_USER=trine_user
-      - POSTGRES_PASSWORD=trine_password
-      - POSTGRES_DB=trine_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: always
-volumes:
-  pgdata:
