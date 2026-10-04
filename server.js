@@ -24,9 +24,11 @@ app.post('/api/blocks', async (req, res) => {
     const count = await prisma.block.count();
     const block = await prisma.block.create({
       data: {
-        name: req.body.name || 'Default Block',
         index: count + 1,
-        timestamp: BigInt(Date.now())
+        timestamp: BigInt(Date.now()),
+        data: req.body.data || 'Trine Block Data',
+        hash: '0x' + Math.random().toString(16).substring(2, 10),
+        prevHash: '0x00000000'
       }
     });
     res.status(201).json({
