@@ -1,16 +1,21 @@
+const express = require('express');
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
+const app = express();
+const port = process.env.PORT || 3000;
 
-async function main() {
-  const blocks = await prisma.block.findMany();
-  console.log('Blocks from database:', blocks);
-}
+app.use(express.json());
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+app.get('/api/blocks', async (req, res) => {
+  try {
+    const blocks = await prisma.block.findMany();
+    res.json(blocks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
