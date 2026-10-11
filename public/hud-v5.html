@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>ARCHITECT OF RESONANCE - HUD v5.1</title>
+    <title>ARCHITECT OF RESONANCE - HUD v5.2</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -133,11 +133,11 @@
             transform: translateX(-50%);
             background: rgba(5, 14, 29, 0.95);
             border: 2px solid #ff0055;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             z-index: 10;
             display: none;
-            width: 320px;
+            width: 340px;
             box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
         }
         .dissonance-panel.active { display: block; }
@@ -147,7 +147,7 @@
             align-items: center;
             gap: 10px;
         }
-        input[type=range] { flex: 1; }
+        input[type=range] { flex: 1; accent-color: #ff0055; cursor: pointer; }
         .chronicle-log {
             font-size: 0.7rem; 
             color: #88ccff; 
@@ -207,7 +207,7 @@
     </div>
 
     <header>
-        <div>⚛️ ARCHITECT OF RESONANCE <span style="color: #ff0055; font-size: 0.75rem;">[QUANTUM HUD v5.1]</span></div>
+        <div>⚛️ ARCHITECT OF RESONANCE <span style="color: #ff0055; font-size: 0.75rem;">[QUANTUM HUD v5.2]</span></div>
         <div style="font-size: 0.75rem; color: #ffcc00;">КОГЕРЕНТНІСТЬ МЕРЕЖІ: <span id="coherenceVal">98%</span></div>
     </header>
 
@@ -251,8 +251,8 @@
                 <div style="color:#ff0055; font-weight:bold; font-size:0.8rem;">⚠️ ДЕСТРУКТИВНИЙ ФАЗОВИЙ ЗСУВ</div>
                 <div style="font-size:0.7rem; margin-top:4px; color:#e0f7fc;">Підлаштуйте частоту резонатора для погашення дисонансу:</div>
                 <div class="slider-container">
-                    <span style="font-size:0.7rem;">400 Hz</span>
-                    <input type="range" id="freqSlider" min="400" max="500" value="410">
+                    <span id="currentSliderVal" style="font-size:0.75rem; font-weight:bold; color:#00f3ff;">450 Hz</span>
+                    <input type="range" id="freqSlider" min="400" max="500" value="450">
                     <span style="font-size:0.7rem;">Ціль: <span id="targetFreq">468</span> Hz</span>
                 </div>
                 <button id="tuneBtn" style="width:100%; text-align:center;">🎯 Гармонізувати Частоту</button>
@@ -269,7 +269,7 @@
 
             <div class="panel-title" style="margin-top: 10px;">ХРОНІКА РЕЗОНАНСУ</div>
             <div class="chronicle-log" id="chronicleLog">
-                <div class="log-item">[19:05] Архітектор активував Маніфест Творення.</div>
+                <div class="log-item">[19:15] Архітектор активував Маніфест Творення v5.2.</div>
             </div>
 
             <div style="font-size: 0.7rem; color: #ff0055; border-top: 1px dashed rgba(255,0,85,0.4); padding-top: 4px; margin-top: auto; flex-shrink: 0;">
@@ -291,6 +291,13 @@
         const incomeRate = document.getElementById('incomeRate');
         const modulesCounter = document.getElementById('modulesCounter');
         const chronicleLog = document.getElementById('chronicleLog');
+        const freqSlider = document.getElementById('freqSlider');
+        const currentSliderVal = document.getElementById('currentSliderVal');
+
+        // Оновлення значення частоти на екрані при русі слайдера
+        freqSlider.addEventListener('input', (e) => {
+            currentSliderVal.textContent = e.target.value + " Hz";
+        });
 
         document.getElementById('startGenesisBtn').addEventListener('click', () => {
             document.getElementById('introModal').style.display = 'none';
@@ -323,16 +330,18 @@
         }, 100);
 
         setInterval(() => {
-            if (Math.random() > 0.4 && !document.getElementById('dissonancePanel').classList.contains('active')) {
+            if (Math.random() > 0.35 && !document.getElementById('dissonancePanel').classList.contains('active')) {
                 triggerDissonance();
             }
-        }, 30000);
+        }, 25000);
 
         function triggerDissonance() {
             entropy = 35;
             coherence = 65;
             targetFrequency = Math.floor(Math.random() * 80) + 410;
             document.getElementById('targetFreq').textContent = targetFrequency;
+            freqSlider.value = 450;
+            currentSliderVal.textContent = "450 Hz";
             document.getElementById('quantumNoise').classList.add('active');
             document.getElementById('dissonancePanel').classList.add('active');
             document.getElementById('statusLabel').textContent = "СТАН МЕРЕЖІ: ДИССОНАНС РЕЗОНАНСУ";
@@ -342,18 +351,18 @@
         }
 
         document.getElementById('tuneBtn').addEventListener('click', () => {
-            const val = parseInt(document.getElementById('freqSlider').value);
-            if (Math.abs(val - targetFrequency) <= 5) {
+            const val = parseInt(freqSlider.value);
+            if (Math.abs(val - targetFrequency) <= 4) {
                 entropy = 2;
                 coherence = 99;
-                trnBalance += 300;
+                trnBalance += 400;
                 document.getElementById('quantumNoise').classList.remove('active');
                 document.getElementById('dissonancePanel').classList.remove('active');
                 document.getElementById('statusLabel').textContent = "СТАН МЕРЕЖІ: ГАРМОНІЗОВАНО";
                 document.getElementById('statusLabel').style.color = "#00f3ff";
-                addLog(`✨ УСПІХ: Частоту налаштовано на ${val} Hz! Когерентність відновлено (+300 TRN).`);
+                addLog(`✨ УСПІХ: Частоту налаштовано на ${val} Hz! Когерентність відновлено (+400 TRN).`);
             } else {
-                addLog(`❌ Неточна частота (${val} Hz). Спробуйте ще.`);
+                addLog(`❌ Неточна частота (${val} Hz). Ціль була ${targetFrequency} Hz.`);
             }
             updateUI();
         });
