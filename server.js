@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 // Явний маршрут для головної сторінки без кешування
 app.get("/", (req, res) => {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "public", "hud-v2.html"));
 });
 
 app.use(express.static(path.join(__dirname, "public")));
