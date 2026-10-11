@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>ARCHITECT OF RESONANCE - HUD v5.0</title>
+    <title>ARCHITECT OF RESONANCE - HUD v5.1</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -44,6 +44,12 @@
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
             overflow-y: auto;
         }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
         .panel-title {
             font-size: 0.8rem;
             color: #ff0055;
@@ -75,8 +81,6 @@
             padding: 8px;
             font-size: 0.72rem;
         }
-        
-        /* ПАНОРАМА ТА КВАНТОВИЙ ШУМ */
         .city-container {
             position: relative;
             display: flex;
@@ -94,7 +98,6 @@
             background: url('/assets/megacity.jpg') center/cover no-repeat;
             z-index: 0;
             filter: contrast(1.15) brightness(0.9);
-            transition: filter 0.5s ease;
         }
         .quantum-noise {
             position: absolute;
@@ -123,8 +126,6 @@
             padding: 6px 10px;
             border-radius: 4px;
         }
-        
-        /* МІНІ-ГРА ГАРМОНІЗАЦІЇ */
         .dissonance-panel {
             position: absolute;
             bottom: 20px;
@@ -140,7 +141,6 @@
             box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
         }
         .dissonance-panel.active { display: block; }
-
         .slider-container {
             margin: 10px 0;
             display: flex;
@@ -148,10 +148,15 @@
             gap: 10px;
         }
         input[type=range] { flex: 1; }
-
         .chronicle-log {
-            font-size: 0.7rem; color: #88ccff; overflow-y: auto; flex: 1;
-            display: flex; flex-direction: column; gap: 5px; max-height: 140px;
+            font-size: 0.7rem; 
+            color: #88ccff; 
+            overflow-y: auto; 
+            flex: 1;
+            display: flex; 
+            flex-direction: column; 
+            gap: 5px; 
+            margin-top: 6px;
         }
         .log-item { border-left: 2px solid #00f3ff; padding-left: 6px; }
         .encyclopedia-card {
@@ -161,17 +166,52 @@
             margin-top: 5px;
             font-size: 0.68rem;
             color: #e0f7fc;
+            flex-shrink: 0;
         }
+        .intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(1, 4, 9, 0.95);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .intro-card {
+            background: #050e1d;
+            border: 2px solid #00f3ff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.3);
+        }
+        .intro-card h2 { color: #ff0055; margin-top: 0; letter-spacing: 2px; }
+        .intro-card p { font-size: 0.85rem; color: #a5f3fc; line-height: 1.6; margin-bottom: 20px; }
     </style>
 </head>
 <body>
+    <div class="intro-overlay" id="introModal">
+        <div class="intro-card">
+            <h2>⚛️ МАНІФЕСТ АРХІТЕКТОРА</h2>
+            <p>
+                Всесвіт народжується не з руйнування чи боротьби. У первинному стані існує чистий потенціал — океан неструктурованих імовірностей та хаосу.<br><br>
+                Перший закон Творіння — <b>Фокус Свідомості (Ефект Спостерігача)</b>. Коли ви направляєте увагу на хаос, хвильова функція колапсує у впорядковану материю.<br><br>
+                Ваша мета — не загарбання, а <b>висока когерентність і гармонізація простору</b>. Перетворюйте дисонанс на резонанс, будуйте імперію через знання та чистоту енергії.
+            </p>
+            <button id="startGenesisBtn" style="width: 100%; text-align: center; padding: 12px; background: linear-gradient(135deg, #00f3ff, #ff0055); color: #fff; font-size: 0.9rem;">
+                ✨ Прийняти Резонанс і Почати Творення
+            </button>
+        </div>
+    </div>
+
     <header>
-        <div>⚛️ ARCHITECT OF RESONANCE <span style="color: #ff0055; font-size: 0.75rem;">[QUANTUM HUD v5.0]</span></div>
+        <div>⚛️ ARCHITECT OF RESONANCE <span style="color: #ff0055; font-size: 0.75rem;">[QUANTUM HUD v5.1]</span></div>
         <div style="font-size: 0.75rem; color: #ffcc00;">КОГЕРЕНТНІСТЬ МЕРЕЖІ: <span id="coherenceVal">98%</span></div>
     </header>
 
     <div class="main-layout">
-        <!-- ЛІВА КОЛОНКА: ГЕНЕРАТОРИ НЕГЕНТРОПІЇ -->
         <div class="panel">
             <div class="panel-title">ГЕНЕРАТОРИ КВАНТОВОГО ПОЛЯ</div>
             <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -189,8 +229,8 @@
 
             <div class="widget-box">
                 <div style="color:#00f3ff; font-weight:bold; margin-bottom: 2px;">ПОТОЧНИЙ СТАН ВУЗЛІВ</div>
-                <div style="display:flex; justify-style:space-between;"><span>Пасивний Резонанс:</span><span id="incomeRate" style="color:#00f3ff;">+0/с</span></div>
-                <div style="display:flex; justify-style:space-between;"><span>Модулі в мережі:</span><span id="modulesCounter" style="color:#ffcc00;">0 Вузлів</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Пасивний Резонанс:</span><span id="incomeRate" style="color:#00f3ff;">+0/с</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Модулі в мережі:</span><span id="modulesCounter" style="color:#ffcc00;">0 Вузлів</span></div>
             </div>
 
             <div style="margin-top: auto; font-size: 0.8rem; color: #6699bb; background: #020611; padding: 8px; border-radius: 5px; border: 1px solid #00f3ff;">
@@ -198,7 +238,6 @@
             </div>
         </div>
 
-        <!-- ЦЕНТР: ПАНОРАМА ТА МІНІ-ГРА ГАРМОНІЗАЦІЇ -->
         <div class="city-container">
             <div class="city-viewport" id="viewport"></div>
             <div class="quantum-noise" id="quantumNoise"></div>
@@ -208,12 +247,11 @@
                 <span style="color: #ffcc00;">ЕНТРОПІЯ: <span id="entropyVal">2%</span></span>
             </div>
 
-            <!-- Інтерактивна панель боротьби з дисонансом -->
             <div class="dissonance-panel" id="dissonancePanel">
                 <div style="color:#ff0055; font-weight:bold; font-size:0.8rem;">⚠️ ДЕСТРУКТИВНИЙ ФАЗОВИЙ ЗСУВ</div>
                 <div style="font-size:0.7rem; margin-top:4px; color:#e0f7fc;">Підлаштуйте частоту резонатора для погашення дисонансу:</div>
                 <div class="slider-container">
-                    <span style="font-size:0.7rem;">432 Hz</span>
+                    <span style="font-size:0.7rem;">400 Hz</span>
                     <input type="range" id="freqSlider" min="400" max="500" value="410">
                     <span style="font-size:0.7rem;">Ціль: <span id="targetFreq">468</span> Hz</span>
                 </div>
@@ -221,8 +259,7 @@
             </div>
         </div>
 
-        <!-- ПРАВА КОЛОНКА: КВАНТОВА ЕНЦИКЛОПЕДІЯ -->
-        <div class="panel">
+        <div class="panel right-panel">
             <div class="panel-title">КВАНТОВА ЕНЦИКЛОПЕДІЯ</div>
             <div id="encyclopediaBox">
                 <div class="encyclopedia-card">
@@ -232,10 +269,10 @@
 
             <div class="panel-title" style="margin-top: 10px;">ХРОНІКА РЕЗОНАНСУ</div>
             <div class="chronicle-log" id="chronicleLog">
-                <div class="log-item">[18:50] Архітектор ініціалізував Квантове Поле v5.0.</div>
+                <div class="log-item">[19:05] Архітектор активував Маніфест Творення.</div>
             </div>
 
-            <div style="font-size: 0.7rem; color: #ff0055; border-top: 1px dashed rgba(255,0,85,0.4); padding-top: 4px; margin-top: auto;">
+            <div style="font-size: 0.7rem; color: #ff0055; border-top: 1px dashed rgba(255,0,85,0.4); padding-top: 4px; margin-top: auto; flex-shrink: 0;">
                 ГАРМОНІЯ ВСЕСВІТУ: ОНЛАЙН
             </div>
         </div>
@@ -254,7 +291,11 @@
         const incomeRate = document.getElementById('incomeRate');
         const modulesCounter = document.getElementById('modulesCounter');
         const chronicleLog = document.getElementById('chronicleLog');
-        const encyclopediaBox = document.getElementById('encyclopediaBox');
+
+        document.getElementById('startGenesisBtn').addEventListener('click', () => {
+            document.getElementById('introModal').style.display = 'none';
+            addLog("✨ Пролог завершено. Почався процес Активного Творення і гармонізації.");
+        });
 
         function addLog(text) {
             const time = new Date().toTimeString().split(' ')[0].substring(0, 5);
@@ -281,7 +322,6 @@
             updateUI();
         }, 100);
 
-        // Випадковий Квантовий Дисонанс кожні 30 секунд
         setInterval(() => {
             if (Math.random() > 0.4 && !document.getElementById('dissonancePanel').classList.contains('active')) {
                 triggerDissonance();
