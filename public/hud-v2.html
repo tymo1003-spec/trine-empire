@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>TRINE EMPIRE - L1 Core HUD</title>
+    <title>TRINE EMPIRE - Neo-Asian City HUD</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -40,6 +40,7 @@
             flex-direction: column;
             gap: 15px;
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.05);
+            backdrop-filter: blur(10px);
         }
         .panel-title {
             font-size: 0.9rem;
@@ -66,19 +67,19 @@
             color: #ff0055;
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
         }
-        /* Центральний блок: Максимально детальний Neo-Asian Megacity */
+        /* Центральний блок: Вечірній мегаполіс */
         .city-container {
             position: relative;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: space-between;
-            background: radial-gradient(circle at center, #0a1b35 0%, #030712 100%);
-            border: 1px solid rgba(0, 243, 255, 0.5);
+            background: linear-gradient(180deg, #081121 0%, #030712 100%),
+                        radial-gradient(circle at 50% 60%, rgba(0, 243, 255, 0.08) 0%, transparent 70%);
+            border: 1px solid rgba(0, 243, 255, 0.4);
             border-radius: 10px;
-            padding: 10px;
+            padding: 15px;
             overflow: hidden;
-            box-shadow: inset 0 0 50px rgba(0, 243, 255, 0.2);
+            box-shadow: inset 0 0 40px rgba(0, 243, 255, 0.15);
         }
         .city-header {
             width: 100%;
@@ -86,54 +87,68 @@
             justify-content: space-between;
             font-size: 0.8rem;
             border-bottom: 1px solid rgba(0, 243, 255, 0.2);
-            padding-bottom: 5px;
+            padding-bottom: 8px;
+            z-index: 2;
+        }
+        .city-viewport {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+            opacity: 0.55;
+            z-index: 0;
+            filter: saturate(1.2) brightness(0.85);
+        }
+        .city-overlay-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(3,7,18,0.3) 0%, rgba(3,7,18,0.7) 100%);
+            z-index: 1;
+            pointer-events: none;
         }
         .city-svg {
+            position: relative;
             width: 100%;
             flex: 1;
-            max-height: 420px;
+            z-index: 2;
         }
-        .kanji-v { fill: #00f3ff; font-size: 9px; font-weight: bold; writing-mode: tb; letter-spacing: 2px; }
-        .kanji-v.magenta { fill: #ff0055; }
-        .kanji-v.yellow { fill: #ffcc00; }
-        
         .shield-dome {
             fill: none;
             stroke: #00f3ff;
             stroke-width: 1.5;
             stroke-dasharray: 8 12;
-            opacity: 0.7;
-            animation: rotateDome 50s linear infinite;
+            opacity: 0.5;
+            animation: rotateDome 60s linear infinite;
         }
         @keyframes rotateDome { from { transform: rotate(0deg); transform-origin: 250px 210px; } to { transform: rotate(360deg); transform-origin: 250px 210px; } }
         
-        .traffic-line { animation: trafficMove 2s linear infinite; }
-        .traffic-line-rev { animation: trafficMoveRev 2.5s linear infinite; }
-        @keyframes trafficMove { from { stroke-dashoffset: 25; } to { stroke-dashoffset: 0; } }
-        @keyframes trafficMoveRev { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 25; } }
-
-        .reactor-glow { animation: reactorPulse 1.5s ease-in-out infinite alternate; }
+        .reactor-glow { animation: reactorPulse 2s ease-in-out infinite alternate; }
         @keyframes reactorPulse {
-            0% { r: 24px; opacity: 0.7; }
-            100% { r: 36px; opacity: 1; filter: drop-shadow(0 0 18px #00f3ff); }
+            0% { r: 20px; opacity: 0.6; }
+            100% { r: 30px; opacity: 0.9; filter: drop-shadow(0 0 15px #00f3ff); }
         }
 
         .shockwave {
             fill: none;
             stroke: #00f3ff;
-            stroke-width: 3;
+            stroke-width: 2.5;
             opacity: 0;
-            transform-origin: 250px 215px;
+            transform-origin: 250px 200px;
         }
-        .shockwave.active { animation: shockwaveExpand 0.7s ease-out; }
+        .shockwave.active { animation: shockwaveExpand 0.8s ease-out; }
         @keyframes shockwaveExpand {
-            0% { r: 15px; opacity: 1; stroke: #00f3ff; }
+            0% { r: 10px; opacity: 1; stroke: #00f3ff; }
             50% { stroke: #ff0055; }
-            100% { r: 260px; opacity: 0; stroke-width: 1; }
+            100% { r: 240px; opacity: 0; stroke-width: 0.5; }
         }
 
-        .hero-pad { fill: #051329; stroke: #00f3ff; stroke-width: 1.5; transition: all 0.4s ease; }
-        .hero-pad.active-hero { fill: #ff0055; stroke: #ffffff; filter: drop-shadow(0 0 12px #ff0055); }
+        .hero-pad { fill: #051329; stroke: #00f3ff; stroke-width: 1.5; transition: all 0.4s ease; cursor: pointer; }
+        .hero-pad.active-hero { fill: #ff0055; stroke: #ffffff; filter: drop-shadow(0 0 10px #ff0055); }
 
         .floating-reward {
             position: absolute;
@@ -146,6 +161,7 @@
             text-shadow: 0 0 15px #ffcc00;
             opacity: 0;
             pointer-events: none;
+            z-index: 10;
         }
         .floating-reward.animate { animation: floatUp 1s ease-out forwards; }
         @keyframes floatUp {
@@ -162,13 +178,13 @@
             flex-direction: column;
             gap: 6px;
         }
-        .log-item { border-left: 2px solid #00f3ff; padding-left: 6px; opacity: 0.8; }
+        .log-item { border-left: 2px solid #00f3ff; padding-left: 6px; opacity: 0.85; }
     </style>
 </head>
 <body>
     <header>
-        <div>⚡ TRINE EMPIRE <span style="color: #ff0055; font-size: 0.8rem;">[NEO-ASIAN CYBER-CITY HUD]</span></div>
-        <div style="font-size: 0.8rem; color: #ffcc00;">СТАТУС: АКТИВНИЙ МЕГАПОЛІС</div>
+        <div>⚡ TRINE EMPIRE <span style="color: #ff0055; font-size: 0.8rem;">[NEO-ASIAN MEGACITY HUD]</span></div>
+        <div style="font-size: 0.8rem; color: #ffcc00;">СТАТУС: ПАНОРАМА АКТИВНА</div>
     </header>
 
     <div class="main-layout">
@@ -183,30 +199,25 @@
             </div>
         </div>
 
-        <!-- ЦЕНТРАЛЬНА КОЛОНКА: ЩІЛЬНИЙ КІБЕР-МЕГАПОЛІС -->
+        <!-- ЦЕНТРАЛЬНА КОЛОНКА: ВИД НА ВЕЧІРНІЙ МЕГАПОЛІС -->
         <div class="city-container">
+            <div class="city-viewport"></div>
+            <div class="city-overlay-gradient"></div>
+
             <div class="city-header">
-                <span style="color: #ff0055;">ネオ東京 // CYBER-MEGACITY L1</span>
+                <span style="color: #ff0055;">ネオ東京 // ПАНОРАМА МЕГАПОЛІСУ</span>
                 <span style="color: #00f3ff;">ЛІРОВИЙ ПРИРОСТ: +50 TRN/ХВ</span>
             </div>
             
-            <svg class="city-svg" viewBox="0 0 500 420" xmlns="http://www.w3.org/2000/svg">
+            <svg class="city-svg" viewBox="0 0 500 380" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <linearGradient id="bCyan" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" stop-color="#021226" stop-opacity="1"/>
-                        <stop offset="100%" stop-color="#00f3ff" stop-opacity="0.9"/>
-                    </linearGradient>
-                    <linearGradient id="bMag" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" stop-color="#260212" stop-opacity="1"/>
-                        <stop offset="100%" stop-color="#ff0055" stop-opacity="0.9"/>
-                    </linearGradient>
                     <radialGradient id="coreGr" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" stop-color="#00f3ff" stop-opacity="1"/>
-                        <stop offset="50%" stop-color="#ff0055" stop-opacity="0.6"/>
+                        <stop offset="60%" stop-color="#ff0055" stop-opacity="0.6"/>
                         <stop offset="100%" stop-color="#030712" stop-opacity="0"/>
                     </radialGradient>
                     <filter id="nGlide">
-                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                         <feMerge>
                             <feMergeNode in="coloredBlur"/>
                             <feMergeNode in="SourceGraphic"/>
@@ -214,70 +225,31 @@
                     </filter>
                 </defs>
 
-                <!-- Захисний купол -->
-                <circle cx="250" cy="210" r="195" class="shield-dome" filter="url(#nGlide)"/>
+                <!-- Голографічний купол -->
+                <circle cx="250" cy="200" r="170" class="shield-dome" filter="url(#nGlide)"/>
 
-                <!-- Фоновий шар хмарочосів -->
-                <g opacity="0.6">
-                    <rect x="40" y="140" width="45" height="210" fill="#051020"/>
-                    <rect x="85" y="100" width="55" height="250" fill="#081830"/>
-                    <rect x="140" y="130" width="40" height="220" fill="#051020"/>
-                    <rect x="320" y="120" width="45" height="230" fill="#081830"/>
-                    <rect x="365" y="90" width="55" height="260" fill="#0b1f3f"/>
-                    <rect x="420" y="140" width="40" height="210" fill="#051020"/>
-                </g>
-
-                <!-- Середній шар: Великі неонові вежі -->
+                <!-- Центральний енергетичний вузол HUD -->
                 <g>
-                    <!-- Ліва Енерго-вежа -->
-                    <rect x="60" y="160" width="70" height="190" fill="url(#bCyan)" stroke="#00f3ff" stroke-width="2" filter="url(#nGlide)" rx="3"/>
-                    <text x="72" y="185" class="kanji-v">電力核心</text>
-                    <text x="102" y="185" class="kanji-v yellow">GRID</text>
-
-                    <!-- Права Оборонна вежа -->
-                    <rect x="370" y="150" width="70" height="200" fill="url(#bMag)" stroke="#ff0055" stroke-width="2" filter="url(#nGlide)" rx="3"/>
-                    <text x="382" y="175" class="kanji-v magenta">防衛シールド</text>
-                    <text x="412" y="175" class="kanji-v yellow">DEF</text>
-
-                    <!-- Ближні хмарочоси з вікнами -->
-                    <rect x="130" y="180" width="55" height="170" fill="#061225" stroke="#00f3ff" stroke-width="1"/>
-                    <line x1="157" y1="190" x2="157" y2="330" stroke="#00f3ff" stroke-width="1" stroke-dasharray="3 6"/>
-                    
-                    <rect x="315" y="170" width="55" height="180" fill="#061225" stroke="#ff0055" stroke-width="1"/>
-                    <line x1="342" y1="180" x2="342" y2="330" stroke="#ff0055" stroke-width="1" stroke-dasharray="3 6"/>
-
-                    <!-- Повітряні магістралі трафіку -->
-                    <line x1="60" y1="200" x2="440" y2="200" stroke="#00f3ff" stroke-dasharray="12 6" stroke-width="3" class="traffic-line" filter="url(#nGlide)"/>
-                    <line x1="60" y1="260" x2="440" y2="260" stroke="#ff0055" stroke-dasharray="15 8" stroke-width="2.5" class="traffic-line-rev" filter="url(#nGlide)"/>
-                    <line x1="130" y1="310" x2="370" y2="310" stroke="#ffcc00" stroke-dasharray="10 5" stroke-width="2" class="traffic-line"/>
-                </g>
-
-                <!-- Центральна Цитадель L1 Core -->
-                <g>
-                    <polygon points="250,45 315,115 315,335 185,335 185,115" fill="#030914" stroke="#00f3ff" stroke-width="3" filter="url(#nGlide)"/>
-                    <polygon points="250,60 295,120 295,315 205,315 205,120" fill="#081428" stroke="#ff0055" stroke-width="1.5"/>
-                    
-                    <!-- Реактор -->
-                    <circle cx="250" cy="215" r="32" fill="url(#coreGr)" class="reactor-glow"/>
-                    <circle cx="250" cy="215" r="14" fill="#ffffff" filter="url(#nGlide)"/>
-                    
-                    <text x="238" y="135" class="kanji-v" style="fill:#fff; font-size:12px;">帝国核心</text>
+                    <polygon points="250,70 300,130 300,310 200,310 200,130" fill="rgba(3, 9, 20, 0.7)" stroke="#00f3ff" stroke-width="2" filter="url(#nGlide)"/>
+                    <circle cx="250" cy="200" r="26" fill="url(#coreGr)" class="reactor-glow"/>
+                    <circle cx="250" cy="200" r="10" fill="#ffffff" filter="url(#nGlide)"/>
+                    <text x="232" y="150" fill="#00f3ff" font-size="10px" font-weight="bold" letter-spacing="1px">NEO-CORE</text>
                 </g>
 
                 <!-- Платформи операторів -->
                 <g id="heroesPlatforms">
-                    <circle cx="155" cy="355" r="12" class="hero-pad" id="pad1"/>
-                    <text x="145" y="380" fill="#00f3ff" font-size="9px">OP-1</text>
+                    <circle cx="160" cy="330" r="10" class="hero-pad" id="pad1"/>
+                    <text x="148" y="352" fill="#00f3ff" font-size="8px">OP-1</text>
                     
-                    <circle cx="250" cy="370" r="15" class="hero-pad" id="pad2"/>
-                    <text x="236" y="400" fill="#00f3ff" font-size="9px">NEXUS</text>
+                    <circle cx="250" cy="345" r="12" class="hero-pad" id="pad2"/>
+                    <text x="233" y="368" fill="#00f3ff" font-size="8px">NEXUS</text>
                     
-                    <circle cx="345" cy="355" r="12" class="hero-pad" id="pad3"/>
-                    <text x="335" y="380" fill="#00f3ff" font-size="9px">OP-2</text>
+                    <circle cx="340" cy="330" r="10" class="hero-pad" id="pad3"/>
+                    <text x="328" y="352" fill="#00f3ff" font-size="8px">OP-2</text>
                 </g>
 
                 <!-- Хвиля імпульсу -->
-                <circle cx="250" cy="215" r="10" class="shockwave" id="shockWave"/>
+                <circle cx="250" cy="200" r="10" class="shockwave" id="shockWave"/>
             </svg>
 
             <div class="floating-reward" id="floatingReward">+50 TRN</div>
@@ -287,10 +259,10 @@
         <div class="panel">
             <div class="panel-title">ГОЛОГРАФІЧНА ХРОНІКА</div>
             <div class="chronicle-log" id="chronicleLog">
-                <div class="log-item">[14:40] Система завантажена. Мережа Stable.</div>
-                <div class="log-item">[15:10] Мегаполіс Neo-Asian оновлено успішно.</div>
+                <div class="log-item">[16:45] Панорамний режим оновлено.</div>
+                <div class="log-item">[16:46] Синхронізація з мегаполісом стабільна.</div>
             </div>
-            <div style="font-size: 0.75rem; color: #ff0055; border-top: 1px dashed rgba(255,0,85,0.3); pt: 5px;">
+            <div style="font-size: 0.75rem; color: #ff0055; border-top: 1px dashed rgba(255,0,85,0.3); padding-top: 5px;">
                 ЩИТ: 100% | СТБ: ОНЛАЙН
             </div>
         </div>
