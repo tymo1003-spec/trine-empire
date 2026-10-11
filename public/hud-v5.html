@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>ARCHITECT OF RESONANCE - HUD v5.0</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #010409;
+            color: #00f3ff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 10px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00f3ff;
+            padding: 8px 14px;
+            margin-bottom: 10px;
+            background: #06101f;
+            border-radius: 6px;
+        }
+        .main-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            gap: 12px;
+            flex: 1;
+            height: calc(100vh - 60px);
+        }
+        .panel {
+            background: #050e1d;
+            border: 2px solid #00f3ff;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+            overflow-y: auto;
+        }
+        .panel-title {
+            font-size: 0.8rem;
+            color: #ff0055;
+            border-bottom: 1px dashed rgba(255, 0, 85, 0.5);
+            padding-bottom: 4px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        button {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(0, 85, 255, 0.4));
+            border: 1px solid #00f3ff;
+            color: #ffffff;
+            padding: 8px 10px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: linear-gradient(135deg, rgba(255, 0, 85, 0.4), rgba(255, 0, 170, 0.4));
+            border-color: #ff0055;
+        }
+        .widget-box {
+            background: #020611;
+            border: 1px solid #00f3ff;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.72rem;
+        }
+        
+        /* ПАНОРАМА ТА КВАНТОВИЙ ШУМ */
+        .city-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px solid #00f3ff;
+            border-radius: 8px;
+            padding: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+        }
+        .city-viewport {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('/assets/megacity.jpg') center/cover no-repeat;
+            z-index: 0;
+            filter: contrast(1.15) brightness(0.9);
+            transition: filter 0.5s ease;
+        }
+        .quantum-noise {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(255,0,85,0.2) 0%, rgba(3,7,18,0.7) 100%);
+            backdrop-filter: blur(4px);
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .quantum-noise.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .city-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.4);
+            padding-bottom: 6px;
+            z-index: 3;
+            background: rgba(2, 6, 17, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        
+        /* МІНІ-ГРА ГАРМОНІЗАЦІЇ */
+        .dissonance-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(5, 14, 29, 0.95);
+            border: 2px solid #ff0055;
+            padding: 12px;
+            border-radius: 8px;
+            z-index: 10;
+            display: none;
+            width: 320px;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+        }
+        .dissonance-panel.active { display: block; }
+
+        .slider-container {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type=range] { flex: 1; }
+
+        .chronicle-log {
+            font-size: 0.7rem; color: #88ccff; overflow-y: auto; flex: 1;
+            display: flex; flex-direction: column; gap: 5px; max-height: 140px;
+        }
+        .log-item { border-left: 2px solid #00f3ff; padding-left: 6px; }
+        .encyclopedia-card {
+            background: rgba(0, 243, 255, 0.05);
+            border-left: 3px solid #ffcc00;
+            padding: 6px;
+            margin-top: 5px;
+            font-size: 0.68rem;
+            color: #e0f7fc;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>⚛️ ARCHITECT OF RESONANCE <span style="color: #ff0055; font-size: 0.75rem;">[QUANTUM HUD v5.0]</span></div>
+        <div style="font-size: 0.75rem; color: #ffcc00;">КОГЕРЕНТНІСТЬ МЕРЕЖІ: <span id="coherenceVal">98%</span></div>
+    </header>
+
+    <div class="main-layout">
+        <!-- ЛІВА КОЛОНКА: ГЕНЕРАТОРИ НЕГЕНТРОПІЇ -->
+        <div class="panel">
+            <div class="panel-title">ГЕНЕРАТОРИ КВАНТОВОГО ПОЛЯ</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button id="buyBoseBtn">🌌 Конденсат Бозе-Ейнштейна (+5 TRN/с) — <span id="boseCost">100</span> TRN</button>
+                <button id="buyCasimirBtn">⚡ Вакуумний Генератор Казимира (+20 TRN/с) — <span id="casimirCost">450</span> TRN</button>
+                <button id="buyTorsionBtn">🌀 Тorsion-Резонатор Полів (+60 TRN/с) — <span id="torsionCost">1200</span> TRN</button>
+            </div>
+
+            <div class="widget-box">
+                <div style="color:#ffcc00; font-weight:bold; margin-bottom: 4px;">АКТИ СПОСТЕРЕЖЕННЯ</div>
+                <button id="observeBtn" style="width: 100%; text-align: center; background: linear-gradient(135deg, #00f3ff44, #ff005544);">
+                    👁️ Спостереження (+30 TRN / Фокусування)
+                </button>
+            </div>
+
+            <div class="widget-box">
+                <div style="color:#00f3ff; font-weight:bold; margin-bottom: 2px;">ПОТОЧНИЙ СТАН ВУЗЛІВ</div>
+                <div style="display:flex; justify-style:space-between;"><span>Пасивний Резонанс:</span><span id="incomeRate" style="color:#00f3ff;">+0/с</span></div>
+                <div style="display:flex; justify-style:space-between;"><span>Модулі в мережі:</span><span id="modulesCounter" style="color:#ffcc00;">0 Вузлів</span></div>
+            </div>
+
+            <div style="margin-top: auto; font-size: 0.8rem; color: #6699bb; background: #020611; padding: 8px; border-radius: 5px; border: 1px solid #00f3ff;">
+                Енергія Резонансу (TRN): <span id="trnCounter" style="color:#ffcc00; font-weight:bold;">1,000</span>
+            </div>
+        </div>
+
+        <!-- ЦЕНТР: ПАНОРАМА ТА МІНІ-ГРА ГАРМОНІЗАЦІЇ -->
+        <div class="city-container">
+            <div class="city-viewport" id="viewport"></div>
+            <div class="quantum-noise" id="quantumNoise"></div>
+
+            <div class="city-header">
+                <span id="statusLabel" style="color: #00f3ff;">СТАН МЕРЕЖІ: СТАБІЛЬНИЙ КВАНТОВИЙ СТАН</span>
+                <span style="color: #ffcc00;">ЕНТРОПІЯ: <span id="entropyVal">2%</span></span>
+            </div>
+
+            <!-- Інтерактивна панель боротьби з дисонансом -->
+            <div class="dissonance-panel" id="dissonancePanel">
+                <div style="color:#ff0055; font-weight:bold; font-size:0.8rem;">⚠️ ДЕСТРУКТИВНИЙ ФАЗОВИЙ ЗСУВ</div>
+                <div style="font-size:0.7rem; margin-top:4px; color:#e0f7fc;">Підлаштуйте частоту резонатора для погашення дисонансу:</div>
+                <div class="slider-container">
+                    <span style="font-size:0.7rem;">432 Hz</span>
+                    <input type="range" id="freqSlider" min="400" max="500" value="410">
+                    <span style="font-size:0.7rem;">Ціль: <span id="targetFreq">468</span> Hz</span>
+                </div>
+                <button id="tuneBtn" style="width:100%; text-align:center;">🎯 Гармонізувати Частоту</button>
+            </div>
+        </div>
+
+        <!-- ПРАВА КОЛОНКА: КВАНТОВА ЕНЦИКЛОПЕДІЯ -->
+        <div class="panel">
+            <div class="panel-title">КВАНТОВА ЕНЦИКЛОПЕДІЯ</div>
+            <div id="encyclopediaBox">
+                <div class="encyclopedia-card">
+                    <b>💡 Ефект Спостерігача:</b> Квантова система залишається в суперпозиції станів, поки вона не виміряна. Свідомість спостерігача фіксує конкретну реальність.
+                </div>
+            </div>
+
+            <div class="panel-title" style="margin-top: 10px;">ХРОНІКА РЕЗОНАНСУ</div>
+            <div class="chronicle-log" id="chronicleLog">
+                <div class="log-item">[18:50] Архітектор ініціалізував Квантове Поле v5.0.</div>
+            </div>
+
+            <div style="font-size: 0.7rem; color: #ff0055; border-top: 1px dashed rgba(255,0,85,0.4); padding-top: 4px; margin-top: auto;">
+                ГАРМОНІЯ ВСЕСВІТУ: ОНЛАЙН
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let trnBalance = 1000;
+        let baseIncome = 0;
+        let boseCount = 0, casimirCount = 0, torsionCount = 0;
+        let boseCost = 100, casimirCost = 450, torsionCost = 1200;
+        let coherence = 98;
+        let entropy = 2;
+        let targetFrequency = 468;
+
+        const trnCounter = document.getElementById('trnCounter');
+        const incomeRate = document.getElementById('incomeRate');
+        const modulesCounter = document.getElementById('modulesCounter');
+        const chronicleLog = document.getElementById('chronicleLog');
+        const encyclopediaBox = document.getElementById('encyclopediaBox');
+
+        function addLog(text) {
+            const time = new Date().toTimeString().split(' ')[0].substring(0, 5);
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            item.textContent = `[${time}] ${text}`;
+            chronicleLog.prepend(item);
+        }
+
+        function calculateIncome() {
+            return (boseCount * 5) + (casimirCount * 20) + (torsionCount * 60);
+        }
+
+        function updateUI() {
+            trnCounter.textContent = Math.floor(trnBalance).toLocaleString();
+            incomeRate.textContent = `+${calculateIncome()}/с`;
+            modulesCounter.textContent = `${boseCount + casimirCount + torsionCount} Вузлів`;
+            document.getElementById('coherenceVal').textContent = `${coherence}%`;
+            document.getElementById('entropyVal').textContent = `${entropy}%`;
+        }
+
+        setInterval(() => {
+            trnBalance += calculateIncome() / 10;
+            updateUI();
+        }, 100);
+
+        // Випадковий Квантовий Дисонанс кожні 30 секунд
+        setInterval(() => {
+            if (Math.random() > 0.4 && !document.getElementById('dissonancePanel').classList.contains('active')) {
+                triggerDissonance();
+            }
+        }, 30000);
+
+        function triggerDissonance() {
+            entropy = 35;
+            coherence = 65;
+            targetFrequency = Math.floor(Math.random() * 80) + 410;
+            document.getElementById('targetFreq').textContent = targetFrequency;
+            document.getElementById('quantumNoise').classList.add('active');
+            document.getElementById('dissonancePanel').classList.add('active');
+            document.getElementById('statusLabel').textContent = "СТАН МЕРЕЖІ: ДИССОНАНС РЕЗОНАНСУ";
+            document.getElementById('statusLabel').style.color = "#ff0055";
+            addLog("⚠️ УВАГА: Виник деструктивний фазовий зсув у квантовому полі!");
+            updateUI();
+        }
+
+        document.getElementById('tuneBtn').addEventListener('click', () => {
+            const val = parseInt(document.getElementById('freqSlider').value);
+            if (Math.abs(val - targetFrequency) <= 5) {
+                entropy = 2;
+                coherence = 99;
+                trnBalance += 300;
+                document.getElementById('quantumNoise').classList.remove('active');
+                document.getElementById('dissonancePanel').classList.remove('active');
+                document.getElementById('statusLabel').textContent = "СТАН МЕРЕЖІ: ГАРМОНІЗОВАНО";
+                document.getElementById('statusLabel').style.color = "#00f3ff";
+                addLog(`✨ УСПІХ: Частоту налаштовано на ${val} Hz! Когерентність відновлено (+300 TRN).`);
+            } else {
+                addLog(`❌ Неточна частота (${val} Hz). Спробуйте ще.`);
+            }
+            updateUI();
+        });
+
+        document.getElementById('observeBtn').addEventListener('click', () => {
+            trnBalance += 30;
+            addLog("👁️ Акт Спостереження: Колапс хвильової функції згенерував +30 TRN.");
+            updateUI();
+        });
+
+        document.getElementById('buyBoseBtn').addEventListener('click', () => {
+            if (trnBalance >= boseCost) {
+                trnBalance -= boseCost;
+                boseCount++;
+                boseCost = Math.floor(boseCost * 1.35);
+                document.getElementById('boseCost').textContent = boseCost;
+                addLog(`Створено Конденсат Бозе-Ейнштейна (#${boseCount}).`);
+                updateUI();
+            }
+        });
+
+        document.getElementById('buyCasimirBtn').addEventListener('click', () => {
+            if (trnBalance >= casimirCost) {
+                trnBalance -= casimirCost;
+                casimirCount++;
+                casimirCost = Math.floor(casimirCost * 1.4);
+                document.getElementById('casimirCost').textContent = casimirCost;
+                addLog(`Запущено Вакуумний Генератор Казимира (#${casimirCount}).`);
+                updateUI();
+            }
+        });
+
+        document.getElementById('buyTorsionBtn').addEventListener('click', () => {
+            if (trnBalance >= torsionCost) {
+                trnBalance -= torsionCost;
+                torsionCount++;
+                torsionCost = Math.floor(torsionCost * 1.45);
+                document.getElementById('torsionCost').textContent = torsionCost;
+                addLog(`Активовано Торсійний Резонатор Полів (#${torsionCount}).`);
+                updateUI();
+            }
+        });
+    </script>
+</body>
+</html>
