@@ -1,416 +1,207 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRINE Empire — Cyberpunk L1 Portal</title>
+    <title>TRINE EMPIRE - L1 Core</title>
     <style>
-        :root {
-            --neon-blue: #00f0ff;
-            --neon-purple: #7000ff;
-            --neon-pink: #ff007f;
-            --neon-green: #00ff66;
-            --neon-gold: #ffb700;
-            --danger-red: #ff2a2a;
-            --bg-dark: #050811;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Roboto, monospace; user-select: none; }
-        
         body {
-            background-color: var(--bg-dark);
-            color: #e2e8f0;
-            min-height: 100vh;
+            background-color: #030712;
+            color: #00f3ff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
             padding: 20px;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 30%, rgba(112, 0, 255, 0.15) 0%, transparent 60%),
-                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
         }
-
-        /* Sci-Fi Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 25px;
-            background: rgba(10, 15, 30, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            border-radius: 16px;
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
-            margin-bottom: 25px;
-        }
-
-        .brand-title {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
-        }
-
-        /* Layout Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr 340px;
-            gap: 20px;
-        }
-
-        @media (max-width: 1100px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-
-        /* Cyber Card Styles */
-        .hud-card {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 20px;
+        .citadel-container {
             position: relative;
-            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.03), 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
-        }
-
-        .hud-card::before {
-            content: "";
-            position: absolute;
-            top: -1px; left: 20px; right: 20px; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
-        }
-
-        .hud-title {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #94a3b8;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Central Core Canvas Area */
-        .core-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 420px;
+            background: radial-gradient(circle, #081426 0%, #030712 100%);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.15);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+        .city-header-hud {
+            width: 90%;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            padding-bottom: 8px;
+        }
+        .city-kanji { color: #ff0055; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 8px #ff0055; }
+        .city-title { color: #00f3ff; font-weight: bold; letter-spacing: 2px; font-size: 0.9rem; text-shadow: 0 0 10px #00f3ff; }
+        .city-yield { color: #ffcc00; font-weight: bold; font-size: 0.85rem; text-shadow: 0 0 8px #ffcc00; }
+        .city-svg { width: 100%; height: 350px; }
+        .kanji-sign { fill: #00f3ff; font-size: 14px; font-weight: bold; writing-mode: tb; letter-spacing: 4px; }
+        .kanji-sign.magenta { fill: #ff0055; }
+        .kanji-core { fill: #ffffff; font-size: 12px; font-weight: bold; opacity: 0.8; }
+        .shield-dome {
+            fill: none;
+            stroke: #00f3ff;
+            stroke-width: 1;
+            stroke-dasharray: 6 6;
+            opacity: 0.4;
+            animation: rotateDome 40s linear infinite;
+        }
+        .traffic-line { animation: trafficMove 3s linear infinite; }
+        .traffic-line-rev { animation: trafficMoveRev 4s linear infinite; }
+        @keyframes trafficMove { from { stroke-dashoffset: 40; } to { stroke-dashoffset: 0; } }
+        @keyframes trafficMoveRev { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 40; } }
+        @keyframes rotateDome { from { transform: rotate(0deg); transform-origin: 250px 250px; } to { transform: rotate(360deg); transform-origin: 250px 250px; } }
+        .reactor-glow { animation: reactorPulse 2s ease-in-out infinite alternate; }
+        @keyframes reactorPulse {
+            0% { r: 28px; opacity: 0.7; }
+            100% { r: 38px; opacity: 1; filter: drop-shadow(0 0 15px #00f3ff); }
+        }
+        .shockwave {
+            fill: none;
+            stroke: #00f3ff;
+            stroke-width: 3;
+            opacity: 0;
+            transform-origin: 250px 260px;
+        }
+        .shockwave.active { animation: shockwaveExpand 0.8s ease-out; }
+        @keyframes shockwaveExpand {
+            0% { r: 20px; opacity: 1; stroke: #00f3ff; }
+            50% { stroke: #ff0055; }
+            100% { r: 220px; opacity: 0; stroke-width: 1; }
+        }
+        .hero-pad { fill: #051329; stroke: #00f3ff; stroke-width: 1.5; transition: all 0.5s ease; }
+        .hero-pad.active-hero { fill: #ff0055; stroke: #ffffff; filter: drop-shadow(0 0 10px #ff0055); }
+        .floating-reward {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffcc00;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px #ffcc00;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .floating-reward.animate { animation: floatUp 1.2s ease-out forwards; }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, -20px) scale(0.8); }
+            50% { transform: translate(-50%, -70px) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -120px) scale(1); }
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
             justify-content: center;
-            position: relative;
-            min-height: 380px;
         }
-
-        #citadelCanvas {
-            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.4));
-        }
-
-        /* Neon Sliders */
-        .energy-group { margin-bottom: 20px; }
-        .energy-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
-        
-        input[type=range] {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #0f172a;
-            outline: none;
-            -webkit-appearance: none;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px; height: 20px;
-            border-radius: 50%;
-            background: var(--neon-blue);
-            box-shadow: 0 0 12px var(--neon-blue);
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-        /* Action Buttons */
-        .btn-cyber {
-            width: 100%;
-            padding: 14px;
+        button {
+            background: linear-gradient(135deg, #00f3ff, #0055ff);
             border: none;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 14px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            color: #fff;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 6px;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.25s ease;
-            margin-top: 10px;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
         }
-
-        .btn-launch {
-            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            color: #fff;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
-        }
-
-        .btn-launch:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
-        }
-
-        .btn-mint {
-            background: linear-gradient(135deg, var(--neon-green), #059669);
-            color: #000;
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.3);
-        }
-
-        /* Terminal Log */
-        .terminal-box {
-            background: rgba(5, 8, 17, 0.85);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 10px;
-            padding: 12px;
-            font-family: "Courier New", monospace;
-            font-size: 12px;
-            height: 180px;
-            overflow-y: auto;
-            color: var(--neon-blue);
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-        }
-
-        .stat-value {
-            font-size: 22px;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-
-        /* Glitch Animation for Hazards */
-        @keyframes glitchFlash {
-            0% { filter: hue-rotate(0deg) contrast(1); }
-            50% { filter: hue-rotate(180deg) contrast(2) drop-shadow(0 0 30px var(--danger-red)); }
-            100% { filter: hue-rotate(0deg) contrast(1); }
-        }
-        .hazard-active { animation: glitchFlash 0.6s ease; }
+        button:hover { background: linear-gradient(135deg, #ff0055, #ff00aa); box-shadow: 0 0 15px rgba(255, 0, 85, 0.6); }
     </style>
 </head>
-<body id="hudBody">
-
-    <!-- Header Panel -->
-    <div class="header">
-        <div class="brand-title">⚡ TRINE EMPIRE <span style="font-size:12px; color:var(--neon-blue);">L1 CORE</span></div>
-        <div style="display:flex; gap:20px; font-size:13px;">
-            <div>Мережа: <span id="netStatus" style="color:var(--neon-green); font-weight:bold;">ONLINE</span></div>
-            <div>Блокчейн: <span id="blockHeight" style="color:var(--neon-blue); font-weight:bold;">1</span></div>
-            <div>Атмосфера: <span id="globalEventSpan" style="color:var(--neon-gold); font-weight:bold;">Штиль</span></div>
+<body>
+    <div class="citadel-container" id="citadelContainer">
+        <div class="city-header-hud">
+            <span class="city-kanji">都市核心</span>
+            <span class="city-title">NEO-SEOUL CITADEL L1</span>
+            <span class="city-yield" id="cityYieldText">+50 TRN/ЦИКЛ</span>
         </div>
+        <svg class="city-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="neonCyan" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="#001122" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#00f3ff" stop-opacity="0.9"/>
+                </linearGradient>
+                <linearGradient id="neonMagenta" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="#220011" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#ff0055" stop-opacity="0.9"/>
+                </linearGradient>
+                <radialGradient id="corePulse" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#00f3ff" stop-opacity="1"/>
+                    <stop offset="50%" stop-color="#ff0055" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#050b14" stop-opacity="0"/>
+                </radialGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <circle cx="250" cy="250" r="210" class="shield-dome" filter="url(#glow)"/>
+            <g class="city-backlayer">
+                <rect x="70" y="180" width="35" height="180" fill="#091829" rx="2"/>
+                <rect x="120" y="140" width="45" height="220" fill="#0c1f36" rx="2"/>
+                <rect x="330" y="150" width="40" height="210" fill="#0c1f36" rx="2"/>
+                <rect x="380" y="190" width="35" height="170" fill="#091829" rx="2"/>
+            </g>
+            <g class="city-midlayer">
+                <rect x="100" y="200" width="55" height="180" fill="url(#neonCyan)" stroke="#00f3ff" stroke-width="1" filter="url(#glow)"/>
+                <text x="110" y="230" class="kanji-sign">電力</text>
+                <rect x="345" y="190" width="55" height="190" fill="url(#neonMagenta)" stroke="#ff0055" stroke-width="1" filter="url(#glow)"/>
+                <text x="358" y="220" class="kanji-sign magenta">防衛</text>
+                <line x1="155" y1="250" x2="345" y2="250" stroke="#00f3ff" stroke-dasharray="8 4" stroke-width="2" class="traffic-line"/>
+                <line x1="155" y1="310" x2="345" y2="310" stroke="#ff0055" stroke-dasharray="12 6" stroke-width="1.5" class="traffic-line-rev"/>
+            </g>
+            <g class="city-core">
+                <polygon points="250,110 290,170 290,360 210,360 210,170" fill="#051329" stroke="#00f3ff" stroke-width="2" filter="url(#glow)"/>
+                <circle cx="250" cy="260" r="35" fill="url(#corePulse)" id="mainReactor" class="reactor-glow"/>
+                <circle cx="250" cy="260" r="18" fill="#ffffff" filter="url(#glow)"/>
+                <text x="243" y="190" class="kanji-core">核心</text>
+            </g>
+            <g id="heroesPlatforms">
+                <circle cx="180" cy="380" r="12" class="hero-pad" id="pad1"/>
+                <circle cx="250" cy="400" r="12" class="hero-pad" id="pad2"/>
+                <circle cx="320" cy="380" r="12" class="hero-pad" id="pad3"/>
+            </g>
+            <circle cx="250" cy="260" r="10" class="shockwave" id="shockWave"/>
+        </svg>
+        <div class="floating-reward" id="floatingReward">+50 TRN</div>
     </div>
-
-    <!-- Main Grid -->
-    <div class="main-grid">
-
-        <!-- Left Column: Controls -->
-        <div class="hud-card">
-            <div class="hud-title">⚙️ Розподіл Плазми</div>
-            
-            <div class="energy-group">
-                <div class="energy-label">
-                    <span>⚒️ Видобуток</span>
-                    <span id="mVal" style="color:var(--neon-blue)">40%</span>
-                </div>
-                <input type="range" id="mining" min="0" max="100" value="40" oninput="updateSliders()">
-            </div>
-
-            <div class="energy-group">
-                <div class="energy-label">
-                    <span>🛡️ Захисний Щит</span>
-                    <span id="dVal" style="color:var(--neon-purple)">40%</span>
-                </div>
-                <input type="range" id="defense" min="0" max="100" value="40" oninput="updateSliders()">
-            </div>
-
-            <div class="energy-group">
-                <div class="energy-label">
-                    <span>🔭 Сенсорна Розвідка</span>
-                    <span id="eVal" style="color:var(--neon-pink)">20%</span>
-                </div>
-                <input type="range" id="exploration" min="0" max="100" value="20" oninput="updateSliders()">
-            </div>
-
-            <button class="btn-cyber btn-launch" onclick="sendAction('PROCESS_CYCLE')">🚀 Пульс Циклу</button>
-            <button class="btn-cyber btn-mint" onclick="sendAction('MINT_HERO')">✨ Створити Героя (+50 TRN)</button>
-
-            <div style="margin-top:25px;">
-                <div class="hud-title">👛 Ключ Доступу</div>
-                <div id="walletAddr" style="font-size:11px; word-break:break-all; color:var(--neon-gold); font-family:monospace;">---</div>
-                <button onclick="generateKeys()" style="background:transparent; border:1px solid rgba(255,255,255,0.2); color:#aaa; padding:5px 10px; border-radius:6px; font-size:10px; margin-top:8px; cursor:pointer;">Згенерувати Новий Ключ</button>
-            </div>
-        </div>
-
-        <!-- Center Column: Visual Core & Citadel Canvas -->
-        <div class="hud-card core-container">
-            <div class="hud-title" style="position:absolute; top:20px; left:20px;">🏰 Ядро Цитаделі</div>
-            <canvas id="citadelCanvas" width="280" height="280"></canvas>
-            <div style="text-align:center; margin-top:10px;">
-                <div style="font-size:12px; color:#64748b;">Рівень Еволюції</div>
-                <div class="stat-value" id="baseLevel">1</div>
-            </div>
-        </div>
-
-        <!-- Right Column: Stats & Chronicle -->
-        <div class="hud-card">
-            <div class="hud-title">📊 Статистика Системи</div>
-            
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <div>
-                    <div style="font-size:11px; color:#64748b;">Серія (Streak)</div>
-                    <div class="stat-value" id="streakCount" style="color:var(--neon-gold)">0 🔥</div>
-                </div>
-                <div>
-                    <div style="font-size:11px; color:#64748b;">Артефакти</div>
-                    <div class="stat-value" id="artifactCount" style="color:var(--neon-pink)">0</div>
-                </div>
-            </div>
-
-            <div style="margin-bottom:15px;">
-                <div style="font-size:11px; color:#64748b; margin-bottom:5px;">Знайдені Модулі:</div>
-                <div id="artifactsList" style="font-size:12px; color:var(--neon-green); min-height:30px;">Артефактів поки немає</div>
-            </div>
-
-            <div class="hud-title">📜 Голографічна Хроніка</div>
-            <div class="terminal-box" id="chronicleLog">Ініціалізація терміналу TRINE L1...</div>
-        </div>
-
+    <div class="controls">
+        <button id="pulseBtn">⚡ ПУЛЬС ЦИКЛУ</button>
+        <button id="heroBtn">✨ СТВОРИТИ ГЕРОЯ</button>
     </div>
-
     <script>
-        // --- WebGL / Canvas Visual Engine for Citadel Core ---
-        const canvas = document.getElementById("citadelCanvas");
-        const ctx = canvas.getContext("2d");
-        let angle = 0;
-        let coreColor = "#00f0ff";
+        let heroCount = 0;
+        const pulseBtn = document.getElementById('pulseBtn');
+        const heroBtn = document.getElementById('heroBtn');
 
-        function drawCitadel() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            // Outer Rotating Shield Ring
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(angle);
-            ctx.strokeStyle = coreColor;
-            ctx.lineWidth = 3;
-            ctx.setLineDash([15, 10, 5, 10]);
-            ctx.beginPath();
-            ctx.arc(0, 0, 110, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.restore();
-
-            // Inner Rotating Counter Ring
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(-angle * 1.5);
-            ctx.strokeStyle = "rgba(255, 0, 127, 0.6)";
-            ctx.lineWidth = 2;
-            ctx.setLineDash([8, 8]);
-            ctx.beginPath();
-            ctx.arc(0, 0, 85, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.restore();
-
-            // Glowing Central Core
-            const gradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, 60);
-            gradient.addColorStop(0, "#ffffff");
-            gradient.addColorStop(0.5, coreColor);
-            gradient.addColorStop(1, "transparent");
-
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 60, 0, Math.PI * 2);
-            ctx.fill();
-
-            angle += 0.015;
-            requestAnimationFrame(drawCitadel);
-        }
-        drawCitadel();
-
-        // --- Core Logic & API Interaction ---
-        let currentWallet = localStorage.getItem("trine_wallet") || "0xTRINE_" + Math.random().toString(16).substring(2, 10).toUpperCase();
-        document.getElementById("walletAddr").innerText = currentWallet;
-
-        function updateSliders() {
-            document.getElementById("mVal").innerText = document.getElementById("mining").value + "%";
-            document.getElementById("dVal").innerText = document.getElementById("defense").value + "%";
-            document.getElementById("eVal").innerText = document.getElementById("exploration").value + "%";
+        function triggerPulseEffect() {
+            const shock = document.getElementById('shockWave');
+            const reward = document.getElementById('floatingReward');
+            shock.classList.remove('active');
+            void shock.offsetWidth;
+            shock.classList.add('active');
+            reward.classList.remove('animate');
+            void reward.offsetWidth;
+            reward.classList.add('animate');
         }
 
-        async function checkNetwork() {
-            try {
-                const res = await fetch("/healthz");
-                const data = await res.json();
-                document.getElementById("blockHeight").innerText = data.blocksCount;
-                if (data.globalEvent) document.getElementById("globalEventSpan").innerText = data.globalEvent;
-            } catch(e) {}
+        function triggerHeroEffect() {
+            heroCount++;
+            const padId = `pad${((heroCount - 1) % 3) + 1}`;
+            const pad = document.getElementById(padId);
+            if (pad) pad.classList.add('active-hero');
+            triggerPulseEffect();
         }
 
-        async function sendAction(actionType) {
-            const strategy = {
-                mining: parseInt(document.getElementById("mining").value),
-                defense: parseInt(document.getElementById("defense").value),
-                exploration: parseInt(document.getElementById("exploration").value)
-            };
-
-            try {
-                const res = await fetch("/api/game/action", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ player: currentWallet, action: actionType, strategy })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    const pState = data.gameResult.pState;
-                    document.getElementById("streakCount").innerText = pState.streak + " 🔥";
-                    document.getElementById("baseLevel").innerText = pState.baseLevel;
-                    document.getElementById("artifactCount").innerText = pState.artifacts.length;
-                    document.getElementById("artifactsList").innerText = pState.artifacts.length > 0 ? pState.artifacts.join(", ") : "Артефактів поки немає";
-
-                    // Visual Feedback / Animations
-                    if (data.gameResult.eventLog.includes("Пробій щитів")) {
-                        coreColor = "#ff2a2a";
-                        document.getElementById("hudBody").classList.add("hazard-active");
-                        setTimeout(() => document.getElementById("hudBody").classList.remove("hazard-active"), 600);
-                    } else if (data.gameResult.newArtifact) {
-                        coreColor = "#ff007f";
-                    } else {
-                        coreColor = "#00f0ff";
-                    }
-
-                    let htmlLog = "";
-                    pState.chronicle.forEach(item => {
-                        htmlLog += `> [Блок #${item.block}] ${item.text}<br>`;
-                    });
-                    document.getElementById("chronicleLog").innerHTML = htmlLog;
-                    checkNetwork();
-                }
-            } catch (err) {
-                alert("Помилка зєднання з нодою: " + err.message);
-            }
-        }
-
-        function generateKeys() {
-            currentWallet = "0xTRINE_" + Math.random().toString(16).substring(2, 10).toUpperCase();
-            localStorage.setItem("trine_wallet", currentWallet);
-            document.getElementById("walletAddr").innerText = currentWallet;
-        }
-
-        checkNetwork();
-        setInterval(checkNetwork, 5000);
+        if (pulseBtn) pulseBtn.addEventListener('click', triggerPulseEffect);
+        if (heroBtn) heroBtn.addEventListener('click', triggerHeroEffect);
     </script>
 </body>
 </html>
