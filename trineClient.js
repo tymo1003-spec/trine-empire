@@ -1,7 +1,8 @@
 class TrineClient {
-  constructor(baseUrl = "http://localhost:3000") {
+  constructor(baseUrl = "http://localhost:3000", peers = []) {
     this.baseUrl = baseUrl;
-  }
+    this.peers = peers; // Масив URL інших нод у мережі
+}
 
   async syncModule(sourceModule, payload) {
     if (!sourceModule || typeof sourceModule !== "string") {
@@ -38,13 +39,30 @@ class TrineClient {
   }
 
   async verifyChain() {
-    const response = await fetch(`${this.baseUrl}/verify`);
+    const response = await fetch(`${this.baseUrl}/api/blocks/validate`);
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.error || "Chain verification failed");
     }
     return data;
   }
-}
 
+async broadcastBlock(blockData) {
+        const results = [];
+        for (const peer of this.peers) {
+            try {
+                const response = await fetch(`${peer}/api/blocks`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(blockData),
+                });
+                const resData = await response.json();
+                results.push({ peer, success: response.ok, data: resData });
+            } catch (error) {
+                results.push({ peer, success: false, error: error.message });
+            }
+        }
+        return results;
+    }
+}
 module.exports = TrineClient;
